@@ -1,0 +1,65 @@
+openapi: '3.0.2'
+info:
+  title: Advanced Platform Management Interface
+  version: '1.0'
+servers:
+  - url: https://localhost:8110/api
+paths:
+  /v1/device/info:
+    get:
+      summary: Get the EDMP device unique ID and MAC address.
+      tags: 
+        - device
+      parameters:
+        - in: header
+          name: X-Method
+          description: How to obtain device information. Method can be set to "uart", "network" and "both".
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeviceInfo'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                {"ErrorMessage":"The value of the X-Method header is invalid."}
+        '404':
+          $ref: '#/components/responses/NotFound'
+        
+
+components:
+  responses:
+    NotFound:
+      description: The specified resource was not found.
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        ErrorMessage:
+          type: string
+      required:
+        - ErrorMessage
+    DeviceInfo:
+      type: object
+      properties:
+        EDMPID:
+          type: string
+        MAC:
+          type: string
+      required:
+        - EDMPID
+        - MAC
+      example:
+        {"EDMPID":"123456789", "MAC":"00:11:22:33:44:55"}
+
+
